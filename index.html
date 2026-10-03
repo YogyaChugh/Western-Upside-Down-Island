@@ -1,209 +1,136 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Responsive Phaser Game with Min/Max Bounds</title>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background: #111;
-      overflow: hidden;
-    }
-    #game-container {
-      width: clamp(800px, 100vw, 1600px);
-      height: clamp(600px, 100vh, 900px);
-      margin: auto;
-      position: absolute;
-      top: 0; bottom: 0; left: 0; right: 0;
-      background: #000;
-    }
-
-    canvas {
-      display: block;
-      width: 100% !important;
-      height: 100% !important;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Western Upside-Down Island: a game where gravity runs backwards · Yogya Chugh</title>
+<meta name="description" content="Western Upside-Down Island is Yogya Chugh&#x27;s browser game for the Summer of Making Grand Survey map: an island where a curse turned gravity upside down.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://island.yogya.dev/">
+<meta name="author" content="Yogya Chugh">
+<meta name="theme-color" content="#E8473F">
+<link rel="icon" href="https://yogya.dev/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="512x512" href="https://yogya.dev/favicon.png">
+<link rel="apple-touch-icon" href="https://yogya.dev/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yogya Chugh">
+<meta property="og:url" content="https://island.yogya.dev/">
+<meta property="og:title" content="Western Upside-Down Island: a game where gravity runs backwards">
+<meta property="og:description" content="Western Upside-Down Island is Yogya Chugh&#x27;s browser game for the Summer of Making Grand Survey map: an island where a curse turned gravity upside down.">
+<meta property="og:image" content="https://island.yogya.dev/page/card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Western Upside-Down Island, a project by Yogya Chugh">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Western Upside-Down Island: a game where gravity runs backwards">
+<meta name="twitter:description" content="Western Upside-Down Island is Yogya Chugh&#x27;s browser game for the Summer of Making Grand Survey map: an island where a curse turned gravity upside down.">
+<meta name="twitter:image" content="https://island.yogya.dev/page/card.jpg">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebPage",
+   "@id": "https://island.yogya.dev/#webpage",
+   "url": "https://island.yogya.dev/",
+   "name": "Western Upside-Down Island: a game where gravity runs backwards",
+   "description": "Western Upside-Down Island is Yogya Chugh's browser game for the Summer of Making Grand Survey map: an island where a curse turned gravity upside down.",
+   "inLanguage": "en",
+   "isPartOf": {
+    "@type": "WebSite",
+    "@id": "https://yogya.dev/#website",
+    "name": "Yogya Chugh",
+    "url": "https://yogya.dev/"
+   },
+   "about": {
+    "@id": "https://island.yogya.dev/#app"
+   },
+   "author": {
+    "@id": "https://yogya.dev/#person"
+   },
+   "primaryImageOfPage": "https://island.yogya.dev/page/card.jpg",
+   "dateModified": "2026-10-04T00:00:00+05:30"
+  },
+  {
+   "@type": "VideoGame",
+   "@id": "https://island.yogya.dev/#app",
+   "name": "Western Upside-Down Island",
+   "description": "Western Upside-Down Island is Yogya Chugh's browser game for the Summer of Making Grand Survey map: an island where a curse turned gravity upside down.",
+   "url": "https://island.yogya.dev/",
+   "image": "https://island.yogya.dev/page/card.jpg",
+   "applicationCategory": "GameApplication",
+   "operatingSystem": "Web browser",
+   "author": {
+    "@type": "Person",
+    "@id": "https://yogya.dev/#person",
+    "name": "Yogya Chugh",
+    "url": "https://yogya.dev/",
+    "sameAs": [
+     "https://github.com/YogyaChugh",
+     "https://www.linkedin.com/in/yogyachugh"
+    ]
+   },
+   "creator": {
+    "@id": "https://yogya.dev/#person"
+   },
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+   },
+   "sameAs": [
+    "https://github.com/YogyaChugh/Western-Upside-Down-Island"
+   ],
+   "gamePlatform": "Web browser"
+  }
+ ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="page/project.css?v=1">
+<script>window.goatcounter = { path: function (p) { return location.host + p; } };</script>
+<script data-goatcounter="https://yogya.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
-  <div id="game-container"></div>
-  <script>
-    const config = {
-      type: Phaser.AUTO,
-      parent: 'game-container',
-      backgroundColor: '#222',
-      scale: {
-        mode: Phaser.Scale.RESIZE,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-      },
-      physics: {
-          default: 'arcade',
-          arcade: {
-              gravity: { y: 300 },
-              debug: false
-          }
-      },
-      scene: { preload: preload, create: create, update: update }
-    };
+<main>
+  <section class="page" style="--pr:-.3deg" aria-label="Western Upside-Down Island">
+    <div class="cover-in">
+      <div class="mast">
+        <div>
+          <p class="series">A project by <a href="https://yogya.dev/">Yogya Chugh</a></p>
+          <h1>Western Upside-Down Island</h1>
+          <ul class="chips"><li>JavaScript</li><li>Phaser</li><li>Game</li></ul>
+        </div>
+        <a class="home" href="https://yogya.dev/">← yogya.dev</a>
+      </div>
+      <div class="hero">
+        <div>
+          <div class="says"><img src="page/yogya.webp" alt="Yogya Chugh, drawn as a comic character" width="68" height="68"><p class="bub">My island for the Summer of Making Grand Survey map.</p></div>
+          <p class="lead">An island where <mark>gravity runs backwards</mark>, all because of one small mistake.</p>
+          <div class="ctas"><a class="btn " href="play/">Play now →</a><a class="btn white" href="https://github.com/YogyaChugh/Western-Upside-Down-Island"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> Code</a></div>
+        </div>
+        <div class="art" style="--art:#1E1E1E"><img src="page/hero.webp" alt="Western Upside-Down Island screenshot" width="1100" height="688"></div>
+      </div>
+    </div>
+  </section>
 
-    const game = new Phaser.Game(config);
+  <section class="page" style="--pr:.25deg" aria-labelledby="what-t">
+    <header class="page-title"><h2 id="what-t"><span class="tag">What it does</span>Western Upside-Down Island, in short</h2></header>
+    <p class="story">Long ago, Saint Ditchi was meditating in the forests of the West when a cockroach scared him. He killed it, and it rose again as an angry angel with a curse: if his family ever set foot on the ground, gravity would flip. Generations later, they still live upside down.</p>
+<div class="feats"><article class="feat"><h3>Play in your browser</h3><p>Nothing to install. It runs right on this page.</p></article><article class="feat"><h3>Built with Phaser</h3><p>Pixel art, an elevator and an explorer who isn’t from around here.</p></article><article class="feat"><h3>Part of a bigger map</h3><p>One island in Summer of Making’s Grand Survey expedition.</p></article></div>
+  </section>
 
-    function preload() {
-      this.load.image('forward_e', 'assets/Explorepheus/forward.png');
-      this.load.image('left_moving', 'assets/Explorepheus/left_moving.png');
-      this.load.image('right_moving', 'assets/Explorepheus/right_moving.png');
-      this.load.image('left_still', 'assets/Explorepheus/left_still.png');
-      this.load.image('right_still', 'assets/Explorepheus/right_still.png');
-      this.load.image('message_box','assets/bro.png');
-      this.load.image('msg','assets/Component.png');
-      this.load.spritesheet('background','assets/output-onlinepngtools.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('elevator','assets/SimpleElevatorDoors_animated_32x48.png', { frameWidth: 32, frameHeight: 48 });
-      this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
-    }
-
-    function create() {
-
-      platforms = this.physics.add.staticGroup();
-      platforms2 = this.physics.add.staticGroup();
-
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const q = Math.floor(width / 32);
-      const h = Math.floor(height / 32);
-
-      len = h;
-
-      for (p=0;p<1;p++){
-        platforms.create(30, p*len+30, 'background',20).setScale(2).refreshBody();
-        for (i=1;i<q-1;i++){
-          platforms.create((30+i*64), p*len+30, 'background',21).setScale(2).refreshBody();
-        }
-        for (i=1;i<h-12;i++){
-          platforms.create(30, p*len+(30+i*64), 'background',39).setScale(2).refreshBody();
-        }
-        for (i=1;i<h-12;i++){
-          platforms.create((q*32-32), p*len+(30+i*64), 'background',41).setScale(2).refreshBody();
-        }
-        platforms.create(30, p*len+(h*32-32), 'background',58).setScale(2).refreshBody();
-        for (i=1;i<q-1;i++){
-          platforms.create((30+i*64), p*len+(h*32-32), 'background',59).setScale(2).refreshBody();
-        }
-        platforms.create((q*32-32), p*len+30, 'background',22).setScale(2).refreshBody();
-        platforms.create((q*32-32), p*len+(h*32-32), 'background',60).setScale(2).refreshBody();
-      }
-
-      for (yk=0;yk<3;yk++){
-        platforms2.create((q*32-70), yk*len+30+32, 'background',25).setScale(2).refreshBody();
-      }
-
-      el = this.physics.add.sprite((q*32-128), 256, 'elevator',0).setScale(4).refreshBody();
-
-
-
-      player = this.physics.add.sprite(160, 120, 'forward_e').setScale(0.4).refreshBody();
-      player.angle = 180;
-      player.setBounce(0.1);
-      player.setCollideWorldBounds(true);
-      this.physics.world.gravity.y = -300;
-      this.physics.add.collider(player, platforms);
-      this.physics.add.collider(player, platforms2, () => {
-        player.setVelocityX(0);
-        player.anims.stop();
-        player.anims.play("still");
-        el.anims.play("open");
-        this.children.bringToTop(el);
-        el.anims.play("close");
-        const img = this.add.image(width / 2, height / 2.5, 'msg');
-        img.setScale(0.25);
-        img.setDepth(1000);
-      });
-      this.physics.add.collider(el, platforms);
-
-      this.add.image(340, 200, 'message_box').setScale(0.8);
-
-      this.add.text(220, 200, 'Hi ! It\'s explorepheus !', {
-          fontSize: '21px',
-          color: '#000000'
-      });
-
-      this.add.text(width-230, 320, 'Just scroll !!', {
-          fontSize: '21px',
-          color: '#ffffff'
-      });
-
-
-      this.anims.create({
-          key: 'left',
-          frames: [ { key: 'left_moving'},{ key: 'left_still'} ],
-          frameRate: 10,
-          repeat: -1
-      });
-
-      this.anims.create({
-          key: 'still',
-          frames: [ { key: 'forward_e'} ],
-          frameRate: 1
-      });
-
-      this.anims.create({
-          key: 'open',
-          frames: this.anims.generateFrameNumbers('elevator', { start: 0, end: 7 }),
-          frameRate: 40
-      });
-
-      this.anims.create({
-          key: 'close',
-          frames: this.anims.generateFrameNumbers('elevator', { start: 7, end: 0 }),
-          frameRate: 40
-      });
-
-      this.anims.create({
-          key: 'right',
-          frames: [ { key: 'right_moving'},{ key: 'right_still'} ],
-          frameRate: 10,
-          repeat: -1
-      });
-
-      this.input.on("wheel",  (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
-        if (deltaY > 0) {
-            player.setVelocityX(400);
-            player.anims.play('right', true);
-        }
-        else if (deltaY < 0) {
-            player.setVelocityX(-400);
-            player.anims.play('left', true);
-        }
-
-        if (deltaY==0 && player.body.touching.down)
-        {
-            player.setVelocityY(0);
-        }
-
-        clearTimeout(this.scrollTimeout);
-        this.scrollTimeout = setTimeout(() => {
-          player.setVelocityX(0);
-          player.anims.stop();
-        }, 200);
-      });
-      this.add.text(130, 420, 'Western Upside-Down Island', {
-          fontSize: '70px',
-          color: '#ffffff'
-      });
-      this.add.text(350, 510, 'Reputedly even more upside-down than the eastern half.', {
-          fontSize: '35px',
-          color: '#ffffff'
-      });
-    }
-
-    function update (){
-
-    }
-
-    window.addEventListener('resize', () => game.scale.refresh());
-  </script>
+  <footer class="page credit" style="--pr:-.2deg">
+    <img src="page/yogya.webp" alt="" width="96" height="96">
+    <div>
+      <h2>Made by Yogya Chugh</h2>
+      <p>A software engineer in Delhi who builds things to find out how they work. See all of it, as a comic, at <a href="https://yogya.dev/">yogya.dev</a>.</p>
+      <ul class="others" aria-label="More projects"><li><a href="https://webelo.yogya.dev/">Webelo</a></li><li><a href="https://webber.yogya.dev/">Webber</a></li><li><a href="https://safario.yogya.dev/">Safario</a></li><li><a href="https://votes.yogya.dev/">Vote Leaderboard</a></li><li><a href="https://timberly.yogya.dev/">Timberly</a></li><li><a href="https://snake.yogya.dev/">Snake Hustle</a></li></ul>
+    </div>
+  </footer>
+  <p class="foot">© 2026 Yogya Chugh · <a href="https://github.com/YogyaChugh/Western-Upside-Down-Island">Source on GitHub</a></p>
+</main>
 </body>
 </html>
